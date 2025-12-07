@@ -17,6 +17,15 @@ def add_task(args):
     # - Check if the user exists, if not, create one
     # - Create a new Task with the given title
     # - Add the task to the user's task list
+
+    # Validate input
+    if not args.user.strip():
+        print("❌ Error: User name cannot be empty.")
+        return
+    if not args.title.strip():
+        print("❌ Error: Task title cannot be empty.")
+        return
+
     user = users.get(args.user) or User(args.user)
     users[args.user] = user
     task = Task(args.title)
@@ -28,15 +37,24 @@ def complete_task(args):
     # - Look up the task by title
     # - Mark the task as complete
     # - Print appropriate error messages if not found
+
+    # Validate input
+    if not args.user.strip():
+        print("❌ Error: User name cannot be empty.")
+        return
+    if not args.title.strip():
+        print("❌ Error: Task title cannot be empty.")
+        return
+
     user = users.get(args.user)
     if user:
         for task in user.tasks:
             if task.title == args.title:
                 task.complete()
                 return
-        print("❌ Task not found.")
+        print(f"❌ Task '{args.title}' not found for user '{args.user}'.")
     else:
-        print("❌ User not found.")
+        print(f"❌ User '{args.user}' not found.")
 
 # CLI entry point
 def main():
@@ -45,14 +63,14 @@ def main():
 
     # Subparser for adding tasks
     add_parser = subparsers.add_parser("add-task", help="Add a task for a user")
-    add_parser.add_argument("user")
-    add_parser.add_argument("title")
+    add_parser.add_argument("user", help="Name of the user")
+    add_parser.add_argument("title", help="Title of the task to add")
     add_parser.set_defaults(func=add_task)
 
     # Subparser for completing tasks
     complete_parser = subparsers.add_parser("complete-task", help="Complete a user's task")
-    complete_parser.add_argument("user")
-    complete_parser.add_argument("title")
+    complete_parser.add_argument("user", help="Name of the user")
+    complete_parser.add_argument("title", help="Title of the task to complete")
     complete_parser.set_defaults(func=complete_task)
 
     args = parser.parse_args()
